@@ -52,4 +52,14 @@ boolean success = SensorManager.getRotationMatrix(R, I, mGravity, mGeomagnetic);
     private final int ORIENTATION_PORTRAIT_REVERSE = ExifInterface.ORIENTATION_ROTATE_270; // 8
 
 
+    private float[] pitches = new float[1];
+    private float[] rolls = new float[1];
+
+    private final int ORIENTATION_PORTRAIT = ExifInterface.ORIENTATION_ROTATE_90; // 6
+    private final int ORIENTATION_LANDSCAPE_REVERSE = ExifInterface.ORIENTATION_ROTATE_180; // 3
+    private final int ORIENTATION_LANDSCAPE = ExifInterface.ORIENTATION_NORMAL; // 1
+    private final int ORIENTATION_PORTRAIT_REVERSE = ExifInterface.ORIENTATION_ROTATE_270; // 8
+    
+    
+
 https://stackoverflow.com/questions/25972519/android-get-device-orientation-from-azimuth-roll-pitch
