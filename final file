@@ -1,0 +1,226 @@
+package com.example.admin.location_track.compass;
+
+import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.media.ExifInterface;
+import android.util.Log;
+
+public class Compass implements SensorEventListener {
+    private static final String TAG = "Compass";
+    private float magnetValue = 0;
+    private float magnetValueY = 0;
+    private float averagePitch = 0;
+    private float averageRoll = 0;
+    private float[] pitches = new float[1];
+    private float[] rolls = new float[1];
+
+    private final int ORIENTATION_PORTRAIT = ExifInterface.ORIENTATION_ROTATE_90; // 6
+    private final int ORIENTATION_LANDSCAPE_REVERSE = ExifInterface.ORIENTATION_ROTATE_180; // 3
+    private final int ORIENTATION_LANDSCAPE = ExifInterface.ORIENTATION_NORMAL; // 1
+    private final int ORIENTATION_PORTRAIT_REVERSE = ExifInterface.ORIENTATION_ROTATE_270; // 8
+
+    private int orientationNew = ORIENTATION_PORTRAIT;
+    
+    public interface CompassListener {
+        void onNewAzimuth(float azimuth, float verticality, float horizontality);
+    }
+
+    public interface GyroScopeSensorListener {
+        void onGyroScopeValueChange(float gyroScopeValue);
+    }
+
+    public interface GameRotationSensorListener {
+        void onGameRotaionValueChange(float valueX, float valueY, float valueZ);
+    }
+
+    private CompassListener listener;
+    private GyroScopeSensorListener gyroScopeSensorListener;
+    private GameRotationSensorListener gameRotationListener;
+
+    private SensorManager sensorManager;
+    private Sensor gsensor;
+    private Sensor msensor;
+    private Sensor gyroSensor;
+    private Sensor gameRotation;
+
+    private float[] mGravity = new float[3];
+    private float[] mGeomagnetic = new float[3];
+    private float[] R = new float[9];
+    private float[] I = new float[9];
+
+    private float azimuth;
+    private float azimuthFix;
+
+    public Compass(Context context) {
+        sensorManager = (SensorManager) context
+                .getSystemService(Context.SENSOR_SERVICE);
+        gsensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        msensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        gyroSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+        gameRotation = sensorManager.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR);
+
+    }
+
+    public void start() {
+        sensorManager.registerListener(this, gsensor,
+                SensorManager.SENSOR_DELAY_GAME);
+        sensorManager.registerListener(this, msensor,
+                SensorManager.SENSOR_DELAY_GAME);
+        sensorManager.registerListener(this, gyroSensor,
+                SensorManager.SENSOR_DELAY_GAME);
+        sensorManager.registerListener(this, gameRotation,
+                SensorManager.SENSOR_DELAY_GAME);
+
+    }
+
+    public void stop() {
+        sensorManager.unregisterListener(this);
+    }
+
+    public void setAzimuthFix(float fix) {
+        azimuthFix = fix;
+    }
+
+    public void resetAzimuthFix() {
+        setAzimuthFix(0);
+    }
+
+    public void setListener(CompassListener l) {
+        listener = l;
+    }
+
+    public void setListenerGyroScope(GyroScopeSensorListener gyroListener) {
+        gyroScopeSensorListener = gyroListener;
+    }
+
+    public void setListenerGameRotation(GameRotationSensorListener listener) {
+        gameRotationListener = listener;
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        final float alpha = 0.97f;
+
+        synchronized (this) {
+            if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+
+                mGravity[0] = alpha * mGravity[0] + (1 - alpha)
+                        * event.values[0];
+                mGravity[1] = alpha * mGravity[1] + (1 - alpha)
+                        * event.values[1];
+                mGravity[2] = alpha * mGravity[2] + (1 - alpha)
+                        * event.values[2];
+
+                mGravity = event.values;
+
+                Log.i(TAG, "Gravity X " + mGravity[0]);
+                Log.i(TAG, "Gravity Y " + mGravity[1]);
+                Log.i(TAG, "Gravity Z " + mGravity[2]);
+
+                magnetValue = mGravity[0];
+                magnetValueY = mGravity[1];
+            }
+
+            if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
+                mGeomagnetic = event.values;
+
+                mGeomagnetic[0] = alpha * mGeomagnetic[0] + (1 - alpha)
+                        * event.values[0];
+                mGeomagnetic[1] = alpha * mGeomagnetic[1] + (1 - alpha)
+                        * event.values[1];
+                mGeomagnetic[2] = alpha * mGeomagnetic[2] + (1 - alpha)
+                        * event.values[2];
+
+                Log.e(TAG, "Magnet X " + event.values[1]);
+                Log.e(TAG, "Magnet y " + event.values[0]);
+                Log.e(TAG, "Magnet z " + event.values[2]);
+
+            }
+
+            boolean success = SensorManager.getRotationMatrix(R, I, mGravity,
+                    mGeomagnetic);
+
+            if (success) {
+
+                float orientation[] = new float[3];
+                SensorManager.getOrientation(R, orientation);
+                Log.d(TAG, "azimuth (rad): " + azimuth);
+                azimuth = (float) Math.toDegrees(orientation[0]); // orientation
+                azimuth = (azimuth + azimuthFix + 360) % 360;
+                Log.d(TAG, "azimuth (deg): " + azimuth);
+                if (listener != null) {
+                    listener.onNewAzimuth(azimuth, magnetValue, magnetValueY);
+                }
+
+                //TODO new code
+
+                float orientationData[] = new float[3];
+                SensorManager.getOrientation(R, orientationData);
+                averagePitch = addValue(orientationData[1], pitches);
+                averageRoll = addValue(orientationData[2], rolls);
+                orientationNew = calculateOrientation();
+                Log.v("Oriantation :","Roll : "+averageRoll + "Pitch :"+averagePitch);
+                if (gameRotationListener != null) {
+                    gameRotationListener.onGameRotaionValueChange(averageRoll, averagePitch, 0);
+                }
+
+            }
+
+            if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
+                if (gyroScopeSensorListener != null) {
+                    gyroScopeSensorListener.onGyroScopeValueChange(event.values[1]);
+                }
+            }
+
+            if (event.sensor.getType() == Sensor.TYPE_GEOMAGNETIC_ROTATION_VECTOR) {
+                if (gameRotationListener != null) {
+                    gameRotationListener.onGameRotaionValueChange(event.values[0], event.values[1], event.values[2]);
+                }
+            }
+        }
+    }
+
+    private float addValue(float value, float[] values) {
+        value = (float) Math.round((Math.toDegrees(value)));
+        float average = 0;
+        for (int i = 1; i < 1; i++) {
+            values[i - 1] = values[i];
+            average += values[i];
+        }
+        values[1 - 1] = value;
+        average = (average + value) / 1;
+        return average;
+    }
+
+    private int calculateOrientation() {
+        // finding local orientation dip
+        if (((orientationNew == ORIENTATION_PORTRAIT || orientationNew == ORIENTATION_PORTRAIT_REVERSE)
+                && (averageRoll > -30 && averageRoll < 30))) {
+            if (averagePitch > 0)
+                return ORIENTATION_PORTRAIT_REVERSE;
+            else
+                return ORIENTATION_PORTRAIT;
+        } else {
+            // divides between all orientations
+            if (Math.abs(averagePitch) >= 30) {
+                if (averagePitch > 0)
+                    return ORIENTATION_PORTRAIT_REVERSE;
+                else
+                    return ORIENTATION_PORTRAIT;
+            } else {
+                if (averageRoll > 0) {
+                    return ORIENTATION_LANDSCAPE_REVERSE;
+                } else {
+                    return ORIENTATION_LANDSCAPE;
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    }
+}
