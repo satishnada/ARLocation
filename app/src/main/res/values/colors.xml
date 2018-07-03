@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#E88801</color>
+    <color name="colorPrimaryDark">#CB7801</color>
+    <color name="colorAccent">#fcb551</color>
+    <color name="white">#FFFFFF</color>
+    <color name="header_color">#FFA300</color>
+
+    <color name="white_alpha">#99FFFFFF</color>
+    <color name="transparent">#00000000</color>
+    <color name="transparent_alpha">#64000000</color>
+    <color name="snack_success">#6c6b6b</color>
+    <color name="snack_error">#6c6b6b</color>
+    <color name="snack_success_customer">#24c3df</color>
+    <color name="snack_error_customer">#24c3df</color>
+    <color name="app_blue">#1866cf</color>
+    <color name="menu_textcolor">#7C4F0E</color>
+    <color name="menu_background">#E88801</color>
+    <color name="menu_lineonecolor">#E19201</color>
+    <color name="polyline_color">#09A1C6</color>
+
+    <color name="menuLineColor">#e7b052</color>
+    <color name="light_gray">#cecbcd</color>
+
+    <color name="start_color_dialog">#EFF0F0</color>
+    <color name="end_color_dialog">#D5D7D9</color>
+
+    <color name="text_gray_color">#6c6b6b</color>
+    <color name="text_gray_dark">#828282</color>
+    <color name="text_orange_color">#FFA300</color>
+    <color name="text_blue_color">#09A1C6</color>
+    <color name="text_gray">#9e9b9d</color>
+    <color name="text_brown_light">#e59e630e</color>
+    <color name="text_brown_dark">#7C4F0E</color>
+    <color name="text_green_color">#009345</color>
+
+    <color name="gray_dark2">#6c6b6b</color>
+    <color name="gray_dark">#828282</color>
+    <color name="brown_dark">#7C4F0E</color>
+    <color name="brown_light">#e59e630e</color>
+
+    <color name="green">#009345</color>
+    <color name="black">#000000</color>
+    <color name="red">#cc1a2c</color>
+    <color name="red_verified">#008000</color>
+    <color name="red_not_verified">#E83233</color>
+    <color name="white_dark">#D0D2D3</color>
+    <color name="white_dark2">#dfe1e2</color>
+    <color name="orange">#FFA300</color>
+    <color name="end_color">#DEE0E1</color>
+    <color name="colorAccent1">#bfbdbe</color>
+    <color name="light_gray2">#9e9b9d</color>
+
+    <color name="gray_dark3">#767272</color>
+    <color name="white_dark1">#cbcdce</color>
+    <color name="end_color1">#eceeef</color>
+    <color name="orange_dark">#c8ffffff</color>
+
+    <color name="orange_light">#f2dab1</color>
+    <color name="dark1">#595959</color>
+    <color name="light_blue">#5594ed</color>
+
+    <color name="dark_color">#9c9b9b</color>
+
+    <color name="color_white_blue">#80c7da</color>
+    <color name="color_blue">#1ea2c6</color>
+    <color name="color_blue_dark">#1b809b</color>
+    <color name="color_blue_light">#03d4f9</color>
+    <color name="color_search_bg">#d0ffffff</color>
+    <color name="polyline_color_driver">#FFA300</color>
+
+    <color name="transparent_white">#99ffffff</color>
+
+    <color name="dailog_bg1">#DEE0E1</color>
+    <color name="dailog_bg2">#FEFEFE</color>
+    <color name="transprent1">#1BE2E1E1</color>
+    <color name="header_blue">#09A1C6</color>
+
+    <color name="white_dark_user">#ECEFF0</color>
+    <color name="text_color_user">#818283</color>
+    <color name="text_color_orange_dark">#efac53</color>
+    <color name="colorRouteLine">#0A8F08</color>
+
+</resources>
