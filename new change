@@ -63,3 +63,10 @@ boolean success = SensorManager.getRotationMatrix(R, I, mGravity, mGeomagnetic);
     
 
 https://stackoverflow.com/questions/25972519/android-get-device-orientation-from-azimuth-roll-pitch
+
+
+https://www.google.co.in/search?q=ar+location+based+android&rlz=1C1HLDY_enIN693IN693&oq=ar+location+&aqs=chrome.0.0j69i57j0l4.4623j0j7&sourceid=chrome&ie=UTF-8
+
+https://stackoverflow.com/questions/15734587/location-based-augmented-reality-android-application
+https://stackoverflow.com/questions/47976467/making-app-with-location-based-ar-and-arcore
+https://stackoverflow.com/questions/24880503/geolocation-based-augmented-reality
